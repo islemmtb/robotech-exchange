@@ -55,6 +55,7 @@ export type Dict = {
     record: string;
     recordPayment: string;
     settle: string;
+    settleConfirm: string;
     history: string;
     noHistory: string;
     close: string;
@@ -81,7 +82,44 @@ export type Dict = {
       cancel: string;
       errRequired: string;
       errGeneric: string;
+      similarHint: string;
     };
+  };
+  customers: {
+    title: string;
+    subtitle: string;
+    add: string;
+    search: string;
+    empty: string;
+    emptySearch: string;
+    verification: {
+      unverified: string;
+      pending: string;
+      verified: string;
+      rejected: string;
+    };
+    youOwe: string;
+    owesYou: string;
+    contact: { call: string; whatsapp: string; email: string };
+    form: {
+      addTitle: string;
+      editTitle: string;
+      name: string;
+      phone: string;
+      whatsapp: string;
+      email: string;
+      notes: string;
+      verification: string;
+      save: string;
+      saving: string;
+      cancel: string;
+      delete: string;
+      deleteConfirm: string;
+      errName: string;
+      errGeneric: string;
+      errHasDebts: string;
+    };
+    duplicates: { hint: string; usingExisting: string; unlink: string };
   };
   types: {
     cash: string;
@@ -150,6 +188,8 @@ export const dict: Record<Lang, Dict> = {
       record: "Record",
       recordPayment: "Record a payment",
       settle: "Settle in full",
+      settleConfirm:
+        "Record full settlement of {amount} from {name}? Only do this if they've actually paid.",
       history: "Payment history",
       noHistory: "No payments recorded yet.",
       close: "Close",
@@ -176,6 +216,49 @@ export const dict: Record<Lang, Dict> = {
         cancel: "Cancel",
         errRequired: "Pick a customer and enter an amount.",
         errGeneric: "Something went wrong. Try again.",
+        similarHint: "Might already be saved:",
+      },
+    },
+    customers: {
+      title: "Customers",
+      subtitle:
+        "Everyone you deal with — contacts, notes, and what you owe each other.",
+      add: "Add customer",
+      search: "Search by name or phone…",
+      empty: "No customers yet. Add your first one.",
+      emptySearch: "No customer matches your search.",
+      verification: {
+        unverified: "Unverified",
+        pending: "Pending",
+        verified: "Verified",
+        rejected: "Rejected",
+      },
+      youOwe: "You owe",
+      owesYou: "Owes you",
+      contact: { call: "Call", whatsapp: "WhatsApp", email: "Email" },
+      form: {
+        addTitle: "Add customer",
+        editTitle: "Edit customer",
+        name: "Full name",
+        phone: "Phone",
+        whatsapp: "WhatsApp",
+        email: "Email",
+        notes: "Notes",
+        verification: "Verification",
+        save: "Save",
+        saving: "Saving…",
+        cancel: "Cancel",
+        delete: "Delete",
+        deleteConfirm: "Delete this customer? This can't be undone.",
+        errName: "Enter a name.",
+        errGeneric: "Something went wrong. Try again.",
+        errHasDebts: "Can't delete — this customer still has debts on record.",
+      },
+      duplicates: {
+        hint: "Might already be saved:",
+        usingExisting:
+          "Editing an existing customer — saving updates their profile.",
+        unlink: "Not them",
       },
     },
     types: {
@@ -243,6 +326,8 @@ export const dict: Record<Lang, Dict> = {
       record: "Valider",
       recordPayment: "Enregistrer un paiement",
       settle: "Solder en totalité",
+      settleConfirm:
+        "Enregistrer le solde complet de {amount} de {name} ? À faire seulement s'il a réellement payé.",
       history: "Historique des paiements",
       noHistory: "Aucun paiement enregistré.",
       close: "Fermer",
@@ -269,6 +354,50 @@ export const dict: Record<Lang, Dict> = {
         cancel: "Annuler",
         errRequired: "Choisis un client et saisis un montant.",
         errGeneric: "Une erreur est survenue. Réessaie.",
+        similarHint: "Peut-être déjà enregistré :",
+      },
+    },
+    customers: {
+      title: "Clients",
+      subtitle:
+        "Tous ceux avec qui tu traites — contacts, notes, et ce que vous vous devez.",
+      add: "Ajouter un client",
+      search: "Rechercher par nom ou téléphone…",
+      empty: "Aucun client pour l'instant. Ajoute le premier.",
+      emptySearch: "Aucun client ne correspond à ta recherche.",
+      verification: {
+        unverified: "Non vérifié",
+        pending: "En attente",
+        verified: "Vérifié",
+        rejected: "Rejeté",
+      },
+      youOwe: "Tu dois",
+      owesYou: "Te doit",
+      contact: { call: "Appeler", whatsapp: "WhatsApp", email: "Email" },
+      form: {
+        addTitle: "Ajouter un client",
+        editTitle: "Modifier le client",
+        name: "Nom complet",
+        phone: "Téléphone",
+        whatsapp: "WhatsApp",
+        email: "Email",
+        notes: "Notes",
+        verification: "Vérification",
+        save: "Enregistrer",
+        saving: "Enregistrement…",
+        cancel: "Annuler",
+        delete: "Supprimer",
+        deleteConfirm: "Supprimer ce client ? Action irréversible.",
+        errName: "Saisis un nom.",
+        errGeneric: "Une erreur est survenue. Réessaie.",
+        errHasDebts:
+          "Suppression impossible — ce client a encore des dettes enregistrées.",
+      },
+      duplicates: {
+        hint: "Peut-être déjà enregistré :",
+        usingExisting:
+          "Modification d'un client existant — l'enregistrement mettra à jour son profil.",
+        unlink: "Pas lui",
       },
     },
     types: {

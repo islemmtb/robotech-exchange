@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useI18n } from "@/lib/i18n/LangProvider";
+import { findSimilarCustomers } from "@/lib/similar";
 import type { CustomerRow, DebtKind, DebtPriority, Currency } from "@/lib/types";
 
 const CURRENCIES: Currency[] = ["USDT", "EUR", "USD", "DZD"];
@@ -23,7 +24,7 @@ export function NewDebtModal({
   const [customerId, setCustomerId] = useState("");
   const [newName, setNewName] = useState("");
   const [newPhone, setNewPhone] = useState("");
-  const [currency, setCurrency] = useState<Currency>("USDT");
+  const [currency, setCurrency] = useState<Currency>("DZD");
   const [amount, setAmount] = useState("");
   const [reason, setReason] = useState("");
   const [priority, setPriority] = useState<DebtPriority>("normal");
@@ -34,6 +35,9 @@ export function NewDebtModal({
   const [error, setError] = useState<string | null>(null);
 
   const isNewCustomer = customerId === "__new__";
+  const similar = isNewCustomer
+    ? findSimilarCustomers(newName, customers)
+    : [];
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -147,17 +151,37 @@ export function NewDebtModal({
           </div>
 
           {isNewCustomer && (
-            <div className="grid gap-3 rounded-lg bg-surface-2/50 p-3 ring-1 ring-[var(--border)] sm:grid-cols-2">
-              <Field
-                label={t.debts.form.customerName}
-                value={newName}
-                onChange={setNewName}
-              />
-              <Field
-                label={t.debts.form.phone}
-                value={newPhone}
-                onChange={setNewPhone}
-              />
+            <div className="space-y-2 rounded-lg bg-surface-2/50 p-3 ring-1 ring-[var(--border)]">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field
+                  label={t.debts.form.customerName}
+                  value={newName}
+                  onChange={setNewName}
+                />
+                <Field
+                  label={t.debts.form.phone}
+                  value={newPhone}
+                  onChange={setNewPhone}
+                />
+              </div>
+              {similar.length > 0 && (
+                <div className="rounded-lg bg-warn/10 p-2 ring-1 ring-warn/20">
+                  <p className="mb-1 px-1 text-[11px] font-medium text-warn">
+                    {t.debts.form.similarHint}
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {similar.map((c) => (
+                      <button
+                        key={c.id}
+                        onClick={() => setCustomerId(c.id)}
+                        className="rounded-md bg-surface px-2 py-1 text-xs font-medium ring-1 ring-[var(--border)] transition hover:ring-accent"
+                      >
+                        {c.full_name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

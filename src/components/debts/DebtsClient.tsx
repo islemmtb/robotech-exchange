@@ -316,7 +316,12 @@ function DebtCard({
             </div>
             <button
               disabled={busy}
-              onClick={() => recordPayment(remaining)}
+              onClick={() => {
+                const msg = t.debts.settleConfirm
+                  .replace("{amount}", fmtMoney(remaining, debt.currency, lang))
+                  .replace("{name}", customerName);
+                if (confirm(msg)) recordPayment(remaining);
+              }}
               className="mt-2 text-xs font-medium text-accent transition hover:underline disabled:opacity-40"
             >
               {t.debts.settle} ({fmtMoney(remaining, debt.currency, lang)})

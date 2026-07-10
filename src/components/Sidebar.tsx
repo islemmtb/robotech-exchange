@@ -13,7 +13,7 @@ export function Sidebar() {
     { key: "overview", href: "/dashboard", ready: true, icon: <GridIcon /> },
     { key: "exchanges", href: "#", ready: false, icon: <SwapIcon /> },
     { key: "debts", href: "/dashboard/debts", ready: true, icon: <ScaleIcon /> },
-    { key: "customers", href: "#", ready: false, icon: <UsersIcon /> },
+    { key: "customers", href: "/dashboard/customers", ready: true, icon: <UsersIcon /> },
     { key: "cash", href: "#", ready: false, icon: <CashIcon /> },
     { key: "wallets", href: "#", ready: false, icon: <WalletIcon /> },
     { key: "notifications", href: "#", ready: false, icon: <BellIcon /> },

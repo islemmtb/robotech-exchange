@@ -36,12 +36,20 @@ export type DebtBalanceRow = {
   is_overdue: boolean;
 };
 
+export type VerificationStatus =
+  | "unverified"
+  | "pending"
+  | "verified"
+  | "rejected";
+
 export type CustomerRow = {
   id: string;
   full_name: string;
   phone: string | null;
   whatsapp: string | null;
   email: string | null;
+  notes: string | null;
+  verification: VerificationStatus;
 };
 
 export type DebtPaymentRow = {
