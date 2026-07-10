@@ -8,6 +8,7 @@ export type Dict = {
     exchanges: string;
     debts: string;
     customers: string;
+    history: string;
     cash: string;
     wallets: string;
     notifications: string;
@@ -121,6 +122,27 @@ export type Dict = {
     };
     duplicates: { hint: string; usingExisting: string; unlink: string };
   };
+  history: {
+    title: string;
+    subtitle: string;
+    search: string;
+    selectPrompt: string;
+    noCustomers: string;
+    noHistory: string;
+    youOwe: string;
+    owesYou: string;
+    opened: string;
+    payment: string;
+    remaining: string;
+    paid: string;
+    of: string;
+    status: {
+      open: string;
+      partially_paid: string;
+      settled: string;
+      cancelled: string;
+    };
+  };
   types: {
     cash: string;
     binance: string;
@@ -139,6 +161,7 @@ export const dict: Record<Lang, Dict> = {
       exchanges: "Exchanges",
       debts: "Debts",
       customers: "Customers",
+      history: "History",
       cash: "Cash",
       wallets: "Wallets",
       notifications: "Notifications",
@@ -261,6 +284,27 @@ export const dict: Record<Lang, Dict> = {
         unlink: "Not them",
       },
     },
+    history: {
+      title: "History",
+      subtitle: "Every debt and payment, customer by customer.",
+      search: "Search a customer…",
+      selectPrompt: "Pick a customer to see their full history.",
+      noCustomers: "No customers yet.",
+      noHistory: "No debts or payments for this customer yet.",
+      youOwe: "You owe",
+      owesYou: "Owes you",
+      opened: "Opened",
+      payment: "Payment",
+      remaining: "remaining",
+      paid: "paid",
+      of: "of",
+      status: {
+        open: "Open",
+        partially_paid: "Partially paid",
+        settled: "Settled",
+        cancelled: "Cancelled",
+      },
+    },
     types: {
       cash: "Cash",
       binance: "Binance",
@@ -277,6 +321,7 @@ export const dict: Record<Lang, Dict> = {
       exchanges: "Échanges",
       debts: "Dettes",
       customers: "Clients",
+      history: "Historique",
       cash: "Caisse",
       wallets: "Wallets",
       notifications: "Notifications",
@@ -398,6 +443,27 @@ export const dict: Record<Lang, Dict> = {
         usingExisting:
           "Modification d'un client existant — l'enregistrement mettra à jour son profil.",
         unlink: "Pas lui",
+      },
+    },
+    history: {
+      title: "Historique",
+      subtitle: "Chaque dette et paiement, client par client.",
+      search: "Rechercher un client…",
+      selectPrompt: "Choisis un client pour voir tout son historique.",
+      noCustomers: "Aucun client pour l'instant.",
+      noHistory: "Aucune dette ni paiement pour ce client.",
+      youOwe: "Tu dois",
+      owesYou: "Te doit",
+      opened: "Ouverte",
+      payment: "Paiement",
+      remaining: "restant",
+      paid: "payé",
+      of: "sur",
+      status: {
+        open: "Ouverte",
+        partially_paid: "Partiellement payée",
+        settled: "Soldée",
+        cancelled: "Annulée",
       },
     },
     types: {
