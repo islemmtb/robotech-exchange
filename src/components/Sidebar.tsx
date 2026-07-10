@@ -12,7 +12,7 @@ export function Sidebar() {
   const items: { key: keyof typeof t.nav; href: string; ready: boolean; icon: React.ReactNode }[] = [
     { key: "overview", href: "/dashboard", ready: true, icon: <GridIcon /> },
     { key: "exchanges", href: "#", ready: false, icon: <SwapIcon /> },
-    { key: "debts", href: "#", ready: false, icon: <ScaleIcon /> },
+    { key: "debts", href: "/dashboard/debts", ready: true, icon: <ScaleIcon /> },
     { key: "customers", href: "#", ready: false, icon: <UsersIcon /> },
     { key: "cash", href: "#", ready: false, icon: <CashIcon /> },
     { key: "wallets", href: "#", ready: false, icon: <WalletIcon /> },

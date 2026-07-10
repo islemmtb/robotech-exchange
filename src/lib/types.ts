@@ -1,6 +1,8 @@
 export type Currency = "USDT" | "EUR" | "USD" | "DZD";
-
 export type AccountType = "cash" | "binance" | "redotpay" | "onchain" | "bank";
+export type DebtKind = "payable" | "receivable";
+export type DebtPriority = "low" | "normal" | "high" | "urgent";
+export type DebtStatus = "open" | "partially_paid" | "settled" | "cancelled";
 
 export type CashSummaryRow = {
   currency: Currency;
@@ -8,19 +10,44 @@ export type CashSummaryRow = {
 };
 
 export type DebtSummaryRow = {
-  kind: "payable" | "receivable";
+  kind: DebtKind;
   currency: Currency;
   total_remaining: number | null;
   overdue_remaining: number | null;
   open_count: number;
 };
 
-export type AccountBalanceRow = {
+export type DebtBalanceRow = {
   id: string;
-  name: string;
-  type: AccountType;
+  customer_id: string;
+  exchange_id: string | null;
+  kind: DebtKind;
   currency: Currency;
-  is_active: boolean;
-  opening_balance: number;
-  balance: number;
+  original_amount: number;
+  reason: string | null;
+  priority: DebtPriority;
+  due_date: string | null;
+  notes: string | null;
+  status: DebtStatus;
+  created_at: string;
+  updated_at: string;
+  paid_amount: number;
+  remaining_amount: number;
+  is_overdue: boolean;
+};
+
+export type CustomerRow = {
+  id: string;
+  full_name: string;
+  phone: string | null;
+  whatsapp: string | null;
+  email: string | null;
+};
+
+export type DebtPaymentRow = {
+  id: string;
+  debt_id: string;
+  amount: number;
+  paid_at: string;
+  notes: string | null;
 };
