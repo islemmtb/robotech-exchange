@@ -225,7 +225,7 @@ function DebtCard({
       setPayAmount("");
       onChange();
     } else {
-      alert(t.debts.form.errGeneric);
+      alert(error.message);
     }
   };
 

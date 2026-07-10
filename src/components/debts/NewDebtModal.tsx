@@ -61,7 +61,7 @@ export function NewDebtModal({
         .single();
       if (cErr || !data) {
         setBusy(false);
-        setError(t.debts.form.errGeneric);
+        setError(cErr?.message ?? t.debts.form.errGeneric);
         return;
       }
       finalCustomerId = data.id;
@@ -80,7 +80,7 @@ export function NewDebtModal({
 
     setBusy(false);
     if (dErr) {
-      setError(t.debts.form.errGeneric);
+      setError(dErr.message);
       return;
     }
     onCreated();
