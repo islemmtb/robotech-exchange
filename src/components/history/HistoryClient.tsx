@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useI18n } from "@/lib/i18n/LangProvider";
-import { fmtMoney } from "@/lib/format";
+import { fmtMoney, fmtDateTime } from "@/lib/format";
 import type {
   CustomerRow,
   DebtBalanceRow,
@@ -18,11 +18,7 @@ const STATUS_STYLE: Record<DebtStatus, string> = {
 };
 
 function fmtDay(iso: string, lang: string) {
-  return new Intl.DateTimeFormat(lang === "fr" ? "fr-FR" : "en-US", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(iso));
+  return fmtDateTime(iso, lang);
 }
 
 export function HistoryClient({
@@ -170,6 +166,15 @@ export function HistoryClient({
                           )}
                       </div>
                     </div>
+
+                    {d.notes && (
+                      <div className="mt-3 rounded-lg bg-warn/5 px-3 py-2 ring-1 ring-warn/15">
+                        <p className="text-[10px] font-semibold uppercase tracking-wider text-warn/80">
+                          {t.history.note}
+                        </p>
+                        <p className="mt-0.5 text-sm">{d.notes}</p>
+                      </div>
+                    )}
 
                     {pays.length > 0 && (
                       <ul className="mt-3 space-y-1 border-t border-[var(--border)] pt-3">

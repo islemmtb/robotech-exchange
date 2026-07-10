@@ -36,3 +36,14 @@ export function fmtDate(lang: string = "en"): string {
     day: "numeric",
   }).format(new Date());
 }
+
+export function fmtDateTime(iso: string, lang: string = "en"): string {
+  const locale = lang === "fr" ? "fr-FR" : "en-US";
+  return new Intl.DateTimeFormat(locale, {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(iso));
+}

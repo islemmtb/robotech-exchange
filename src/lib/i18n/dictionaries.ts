@@ -59,6 +59,8 @@ export type Dict = {
     settleConfirm: string;
     history: string;
     noHistory: string;
+    opened: string;
+    note: string;
     close: string;
     priorities: { low: string; normal: string; high: string; urgent: string };
     form: {
@@ -133,6 +135,7 @@ export type Dict = {
     owesYou: string;
     opened: string;
     payment: string;
+    note: string;
     remaining: string;
     paid: string;
     of: string;
@@ -215,6 +218,8 @@ export const dict: Record<Lang, Dict> = {
         "Record full settlement of {amount} from {name}? Only do this if they've actually paid.",
       history: "Payment history",
       noHistory: "No payments recorded yet.",
+      opened: "Opened",
+      note: "Note",
       close: "Close",
       priorities: { low: "Low", normal: "Normal", high: "High", urgent: "Urgent" },
       form: {
@@ -295,6 +300,7 @@ export const dict: Record<Lang, Dict> = {
       owesYou: "Owes you",
       opened: "Opened",
       payment: "Payment",
+      note: "Note",
       remaining: "remaining",
       paid: "paid",
       of: "of",
@@ -375,6 +381,8 @@ export const dict: Record<Lang, Dict> = {
         "Enregistrer le solde complet de {amount} de {name} ? À faire seulement s'il a réellement payé.",
       history: "Historique des paiements",
       noHistory: "Aucun paiement enregistré.",
+      opened: "Créée",
+      note: "Note",
       close: "Fermer",
       priorities: { low: "Basse", normal: "Normale", high: "Haute", urgent: "Urgente" },
       form: {
@@ -456,6 +464,7 @@ export const dict: Record<Lang, Dict> = {
       owesYou: "Te doit",
       opened: "Ouverte",
       payment: "Paiement",
+      note: "Note",
       remaining: "restant",
       paid: "payé",
       of: "sur",
