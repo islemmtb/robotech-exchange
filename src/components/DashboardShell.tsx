@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
 
@@ -10,6 +11,8 @@ export function DashboardShell({
   email: string | null;
   children: React.ReactNode;
 }) {
+  const [navOpen, setNavOpen] = useState(false);
+
   return (
     <div className="relative flex min-h-screen">
       {/* ambient signature glow */}
@@ -21,9 +24,9 @@ export function DashboardShell({
             "radial-gradient(60% 100% at 50% 0%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 70%)",
         }}
       />
-      <Sidebar />
+      <Sidebar mobileOpen={navOpen} onClose={() => setNavOpen(false)} />
       <div className="flex min-w-0 flex-1 flex-col">
-        <Topbar email={email} />
+        <Topbar email={email} onMenuClick={() => setNavOpen(true)} />
         <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 md:px-8 md:py-8">
           {children}
         </main>

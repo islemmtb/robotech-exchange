@@ -86,6 +86,10 @@ export type Dict = {
       errRequired: string;
       errGeneric: string;
       similarHint: string;
+      reviewTitle: string;
+      reviewHint: string;
+      back: string;
+      confirm: string;
     };
   };
   customers: {
@@ -245,6 +249,10 @@ export const dict: Record<Lang, Dict> = {
         errRequired: "Pick a customer and enter an amount.",
         errGeneric: "Something went wrong. Try again.",
         similarHint: "Might already be saved:",
+        reviewTitle: "Confirm the details",
+        reviewHint: "Check everything is correct before saving.",
+        back: "Back",
+        confirm: "Confirm & create",
       },
     },
     customers: {
@@ -408,6 +416,10 @@ export const dict: Record<Lang, Dict> = {
         errRequired: "Choisis un client et saisis un montant.",
         errGeneric: "Une erreur est survenue. Réessaie.",
         similarHint: "Peut-être déjà enregistré :",
+        reviewTitle: "Confirme les détails",
+        reviewHint: "Vérifie que tout est correct avant d'enregistrer.",
+        back: "Retour",
+        confirm: "Confirmer et créer",
       },
     },
     customers: {

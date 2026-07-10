@@ -6,7 +6,13 @@ import { useI18n } from "@/lib/i18n/LangProvider";
 import { ThemeToggle, LangToggle } from "./Toggles";
 import { Brand } from "./Brand";
 
-export function Topbar({ email }: { email: string | null }) {
+export function Topbar({
+  email,
+  onMenuClick,
+}: {
+  email: string | null;
+  onMenuClick: () => void;
+}) {
   const { t } = useI18n();
   const router = useRouter();
 
@@ -18,6 +24,15 @@ export function Topbar({ email }: { email: string | null }) {
 
   return (
     <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-[var(--border)] bg-bg/70 px-4 backdrop-blur-md md:px-6">
+      <button
+        onClick={onMenuClick}
+        aria-label="Open menu"
+        className="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-muted ring-1 ring-[var(--border)] transition hover:text-fg md:hidden"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+          <path d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
       <div className="md:hidden">
         <Brand compact />
       </div>
