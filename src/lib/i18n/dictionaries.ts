@@ -190,6 +190,9 @@ export type Dict = {
     restore: string;
     checkConfirm: string;
     errNote: string;
+    edit: string;
+    save: string;
+    cancel: string;
   };
   reservations: {
     title: string;
@@ -212,6 +215,9 @@ export type Dict = {
     restore: string;
     checkConfirm: string;
     errRequired: string;
+    edit: string;
+    save: string;
+    cancel: string;
   };
   types: {
     cash: string;
@@ -427,6 +433,9 @@ export const dict: Record<Lang, Dict> = {
       restore: "Restore",
       checkConfirm: "Mark this as done? It moves to Completed.",
       errNote: "Add a note first.",
+      edit: "Edit",
+      save: "Save",
+      cancel: "Cancel",
     },
     reservations: {
       title: "Reservations",
@@ -450,6 +459,9 @@ export const dict: Record<Lang, Dict> = {
       restore: "Restore",
       checkConfirm: "Mark this reservation as delivered?",
       errRequired: "Pick a client and enter a number.",
+      edit: "Edit",
+      save: "Save",
+      cancel: "Cancel",
     },
     types: {
       cash: "Cash",
@@ -664,6 +676,9 @@ export const dict: Record<Lang, Dict> = {
       restore: "Restaurer",
       checkConfirm: "Marquer comme fait ? Ça passe dans Terminé.",
       errNote: "Ajoute une note.",
+      edit: "Modifier",
+      save: "Enregistrer",
+      cancel: "Annuler",
     },
     reservations: {
       title: "Réservations",
@@ -686,6 +701,9 @@ export const dict: Record<Lang, Dict> = {
       restore: "Restaurer",
       checkConfirm: "Marquer cette réservation comme livrée ?",
       errRequired: "Choisis un client et saisis un numéro.",
+      edit: "Modifier",
+      save: "Enregistrer",
+      cancel: "Annuler",
     },
     types: {
       cash: "Caisse",

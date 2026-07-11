@@ -17,6 +17,31 @@ export function ChecklistClient({ items }: { items: ChecklistItemRow[] }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [eName, setEName] = useState("");
+  const [eNumber, setENumber] = useState("");
+  const [eNote, setENote] = useState("");
+
+  const startEdit = (i: ChecklistItemRow) => {
+    setEditingId(i.id);
+    setEName(i.name ?? "");
+    setENumber(i.number ?? "");
+    setENote(i.note);
+  };
+  const saveEdit = async (id: string) => {
+    if (!eNote.trim()) return;
+    await createClient()
+      .from("checklist_items")
+      .update({
+        name: eName.trim() || null,
+        number: eNumber.trim() || null,
+        note: eNote.trim(),
+      })
+      .eq("id", id);
+    setEditingId(null);
+    router.refresh();
+  };
+
   const active = items.filter((i) => !i.done);
   const completed = items.filter((i) => i.done);
 
@@ -121,26 +146,75 @@ export function ChecklistClient({ items }: { items: ChecklistItemRow[] }) {
           </div>
         ) : (
           <ul className="space-y-2">
-            {active.map((i) => (
-              <li
-                key={i.id}
-                className="glass flex items-start gap-3 rounded-xl p-3.5 ring-1 ring-[var(--border)]"
-              >
-                <button
-                  onClick={() => check(i)}
-                  aria-label="done"
-                  className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-md ring-1 ring-[var(--border)] transition hover:ring-accent"
-                />
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm">{i.note}</p>
-                  {(i.name || i.number) && (
-                    <p className="mt-0.5 text-xs text-muted">
-                      {[i.name, i.number].filter(Boolean).join(" · ")}
-                    </p>
-                  )}
-                </div>
-              </li>
-            ))}
+            {active.map((i) =>
+              editingId === i.id ? (
+                <li
+                  key={i.id}
+                  className="glass space-y-2 rounded-xl p-3.5 ring-1 ring-accent/30"
+                >
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    <input
+                      value={eName}
+                      onChange={(e) => setEName(e.target.value)}
+                      placeholder={t.checklist.name}
+                      className="w-full rounded-lg bg-surface-2 px-3 py-2 text-sm outline-none ring-1 ring-[var(--border)] transition focus:ring-2 focus:ring-accent"
+                    />
+                    <input
+                      value={eNumber}
+                      onChange={(e) => setENumber(e.target.value)}
+                      placeholder={t.checklist.number}
+                      className="w-full rounded-lg bg-surface-2 px-3 py-2 text-sm outline-none ring-1 ring-[var(--border)] transition focus:ring-2 focus:ring-accent"
+                    />
+                  </div>
+                  <input
+                    value={eNote}
+                    onChange={(e) => setENote(e.target.value)}
+                    placeholder={t.checklist.notePh}
+                    className="w-full rounded-lg bg-surface-2 px-3 py-2 text-sm outline-none ring-1 ring-[var(--border)] transition focus:ring-2 focus:ring-accent"
+                  />
+                  <div className="flex justify-end gap-2">
+                    <button
+                      onClick={() => setEditingId(null)}
+                      className="rounded-lg px-3 py-1.5 text-xs font-medium text-muted ring-1 ring-[var(--border)] transition hover:bg-surface-2 hover:text-fg"
+                    >
+                      {t.checklist.cancel}
+                    </button>
+                    <button
+                      onClick={() => saveEdit(i.id)}
+                      disabled={!eNote.trim()}
+                      className="rounded-lg bg-gradient-to-r from-accent to-accent-2 px-3 py-1.5 text-xs font-semibold text-white transition hover:opacity-95 disabled:opacity-50"
+                    >
+                      {t.checklist.save}
+                    </button>
+                  </div>
+                </li>
+              ) : (
+                <li
+                  key={i.id}
+                  className="glass flex items-start gap-3 rounded-xl p-3.5 ring-1 ring-[var(--border)]"
+                >
+                  <button
+                    onClick={() => check(i)}
+                    aria-label="done"
+                    className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-md ring-1 ring-[var(--border)] transition hover:ring-accent"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm">{i.note}</p>
+                    {(i.name || i.number) && (
+                      <p className="mt-0.5 text-xs text-muted">
+                        {[i.name, i.number].filter(Boolean).join(" · ")}
+                      </p>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => startEdit(i)}
+                    className="shrink-0 rounded-lg px-2.5 py-1 text-xs font-medium text-muted ring-1 ring-[var(--border)] transition hover:text-fg"
+                  >
+                    {t.checklist.edit}
+                  </button>
+                </li>
+              ),
+            )}
           </ul>
         )}
       </section>

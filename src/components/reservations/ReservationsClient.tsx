@@ -25,6 +25,31 @@ export function ReservationsClient({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [eName, setEName] = useState("");
+  const [eNumber, setENumber] = useState("");
+  const [eNote, setENote] = useState("");
+
+  const startEdit = (r: ReservationRow) => {
+    setEditingId(r.id);
+    setEName(r.client_name);
+    setENumber(r.client_number);
+    setENote(r.note ?? "");
+  };
+  const saveEdit = async (id: string) => {
+    if (!eName.trim() || !eNumber.trim()) return;
+    await createClient()
+      .from("reservations")
+      .update({
+        client_name: eName.trim(),
+        client_number: eNumber.trim(),
+        note: eNote.trim() || null,
+      })
+      .eq("id", id);
+    setEditingId(null);
+    router.refresh();
+  };
+
   const isNew = customerId === "__new__";
   const similar = isNew ? findSimilarCustomers(newName, customers) : [];
 
@@ -35,7 +60,8 @@ export function ReservationsClient({
     setCustomerId(id);
     if (id && id !== "__new__") {
       const c = customers.find((x) => x.id === id);
-      if (c && !number) setNumber(c.whatsapp || c.phone || "");
+      const saved = c?.whatsapp || c?.phone || "";
+      if (saved) setNumber(saved);
     }
   };
 
@@ -216,25 +242,74 @@ export function ReservationsClient({
           </div>
         ) : (
           <ul className="space-y-2">
-            {active.map((r) => (
-              <li
-                key={r.id}
-                className="glass flex items-start gap-3 rounded-xl p-3.5 ring-1 ring-[var(--border)]"
-              >
-                <button
-                  onClick={() => check(r)}
-                  aria-label="delivered"
-                  className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-md ring-1 ring-[var(--border)] transition hover:ring-accent"
-                />
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium">{r.client_name}</p>
-                  <p className="mt-0.5 text-xs text-muted">
-                    {r.client_number}
-                    {r.note ? " · " + r.note : ""}
-                  </p>
-                </div>
-              </li>
-            ))}
+            {active.map((r) =>
+              editingId === r.id ? (
+                <li
+                  key={r.id}
+                  className="glass space-y-2 rounded-xl p-3.5 ring-1 ring-accent/30"
+                >
+                  <input
+                    value={eName}
+                    onChange={(e) => setEName(e.target.value)}
+                    placeholder={t.reservations.clientName}
+                    className="w-full rounded-lg bg-surface-2 px-3 py-2 text-sm outline-none ring-1 ring-[var(--border)] transition focus:ring-2 focus:ring-accent"
+                  />
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    <input
+                      value={eNumber}
+                      onChange={(e) => setENumber(e.target.value)}
+                      placeholder={t.reservations.numberPh}
+                      className="w-full rounded-lg bg-surface-2 px-3 py-2 text-sm outline-none ring-1 ring-[var(--border)] transition focus:ring-2 focus:ring-accent"
+                    />
+                    <input
+                      value={eNote}
+                      onChange={(e) => setENote(e.target.value)}
+                      placeholder={t.reservations.notePh}
+                      className="w-full rounded-lg bg-surface-2 px-3 py-2 text-sm outline-none ring-1 ring-[var(--border)] transition focus:ring-2 focus:ring-accent"
+                    />
+                  </div>
+                  <div className="flex justify-end gap-2">
+                    <button
+                      onClick={() => setEditingId(null)}
+                      className="rounded-lg px-3 py-1.5 text-xs font-medium text-muted ring-1 ring-[var(--border)] transition hover:bg-surface-2 hover:text-fg"
+                    >
+                      {t.reservations.cancel}
+                    </button>
+                    <button
+                      onClick={() => saveEdit(r.id)}
+                      disabled={!eName.trim() || !eNumber.trim()}
+                      className="rounded-lg bg-gradient-to-r from-accent to-accent-2 px-3 py-1.5 text-xs font-semibold text-white transition hover:opacity-95 disabled:opacity-50"
+                    >
+                      {t.reservations.save}
+                    </button>
+                  </div>
+                </li>
+              ) : (
+                <li
+                  key={r.id}
+                  className="glass flex items-start gap-3 rounded-xl p-3.5 ring-1 ring-[var(--border)]"
+                >
+                  <button
+                    onClick={() => check(r)}
+                    aria-label="delivered"
+                    className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-md ring-1 ring-[var(--border)] transition hover:ring-accent"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium">{r.client_name}</p>
+                    <p className="mt-0.5 text-xs text-muted">
+                      {r.client_number}
+                      {r.note ? " · " + r.note : ""}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => startEdit(r)}
+                    className="shrink-0 rounded-lg px-2.5 py-1 text-xs font-medium text-muted ring-1 ring-[var(--border)] transition hover:text-fg"
+                  >
+                    {t.reservations.edit}
+                  </button>
+                </li>
+              ),
+            )}
           </ul>
         )}
       </section>
