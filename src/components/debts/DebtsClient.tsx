@@ -9,6 +9,7 @@ import type {
   DebtBalanceRow,
   CustomerRow,
   DebtPaymentRow,
+  DebtIncreaseRow,
   DebtPriority,
   Currency,
 } from "@/lib/types";
@@ -43,10 +44,12 @@ export function DebtsClient({
   debts,
   customers,
   payments,
+  increases,
 }: {
   debts: DebtBalanceRow[];
   customers: CustomerRow[];
   payments: DebtPaymentRow[];
+  increases: DebtIncreaseRow[];
 }) {
   const { t, lang } = useI18n();
   const router = useRouter();
@@ -68,6 +71,8 @@ export function DebtsClient({
     customers.find((c) => c.id === id)?.full_name ?? "—";
   const paymentsFor = (debtId: string) =>
     payments.filter((p) => p.debt_id === debtId);
+  const increasesFor = (debtId: string) =>
+    increases.filter((i) => i.debt_id === debtId);
 
   const refresh = () => router.refresh();
 
@@ -104,6 +109,7 @@ export function DebtsClient({
               debt={d}
               customerName={custName(d.customer_id)}
               payments={paymentsFor(d.id)}
+              increases={increasesFor(d.id)}
               onChange={refresh}
             />
           ))}
@@ -122,6 +128,7 @@ export function DebtsClient({
               debt={d}
               customerName={custName(d.customer_id)}
               payments={paymentsFor(d.id)}
+              increases={increasesFor(d.id)}
               onChange={refresh}
             />
           ))}
@@ -191,11 +198,13 @@ function DebtCard({
   debt,
   customerName,
   payments,
+  increases,
   onChange,
 }: {
   debt: DebtBalanceRow;
   customerName: string;
   payments: DebtPaymentRow[];
+  increases: DebtIncreaseRow[];
   onChange: () => void;
 }) {
   const { t, lang } = useI18n();
@@ -207,8 +216,23 @@ function DebtCard({
   const [deleteText, setDeleteText] = useState("");
 
   const remaining = Number(debt.remaining_amount);
-  const original = Number(debt.original_amount);
+  const total = Number(debt.total_amount ?? debt.original_amount);
   const paid = Number(debt.paid_amount);
+
+  const events = [
+    ...increases.map((i) => ({
+      id: i.id,
+      kind: "inc" as const,
+      amount: Number(i.amount),
+      at: i.created_at,
+    })),
+    ...payments.map((p) => ({
+      id: p.id,
+      kind: "pay" as const,
+      amount: Number(p.amount),
+      at: p.paid_at,
+    })),
+  ].sort((a, b) => (a.at < b.at ? -1 : 1));
 
   const priorityStyle: Record<DebtPriority, string> = {
     urgent: "bg-danger/10 text-danger ring-danger/20",
@@ -235,13 +259,9 @@ function DebtCard({
   const increaseDebt = async (amount: number) => {
     if (!amount || amount <= 0) return;
     setBusy(true);
-    const newOriginal = original + amount;
-    const status =
-      paid <= 0 ? "open" : paid < newOriginal ? "partially_paid" : "settled";
     const { error } = await createClient()
-      .from("debts")
-      .update({ original_amount: newOriginal, status })
-      .eq("id", debt.id);
+      .from("debt_increases")
+      .insert({ debt_id: debt.id, amount });
     setBusy(false);
     if (!error) {
       setAmountInput("");
@@ -303,7 +323,9 @@ function DebtCard({
             </span>
           </div>
           {debt.reason && (
-            <p className="mt-0.5 truncate text-xs text-muted">{debt.reason}</p>
+            <p className="mt-1 truncate text-sm font-medium text-fg/90">
+              {debt.reason}
+            </p>
           )}
           <p
             className={
@@ -327,7 +349,7 @@ function DebtCard({
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2 text-xs text-muted">
             <span className="tabnum font-mono">
               {fmtMoney(paid, debt.currency, lang)} {t.debts.paid} · {t.debts.of}{" "}
-              {fmtMoney(original, debt.currency, lang)}
+              {fmtMoney(total, debt.currency, lang)}
             </span>
             <span className="shrink-0">
               {t.debts.opened} · {fmtDateTime(debt.created_at, lang)}
@@ -415,20 +437,27 @@ function DebtCard({
             <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">
               {t.debts.history}
             </p>
-            {payments.length === 0 ? (
+            {events.length === 0 ? (
               <p className="text-xs text-muted">{t.debts.noHistory}</p>
             ) : (
               <ul className="space-y-1">
-                {payments.map((p) => (
+                {events.map((e) => (
                   <li
-                    key={p.id}
+                    key={e.kind + e.id}
                     className="flex items-center justify-between text-xs"
                   >
                     <span className="text-muted">
-                      {fmtDateTime(p.paid_at, lang)}
+                      {e.kind === "inc" ? t.debts.added + " · " : ""}
+                      {fmtDateTime(e.at, lang)}
                     </span>
-                    <span className="tabnum font-mono font-medium">
-                      {fmtMoney(Number(p.amount), debt.currency, lang)}
+                    <span
+                      className={
+                        "tabnum font-mono font-medium " +
+                        (e.kind === "inc" ? "text-warn" : "text-pos")
+                      }
+                    >
+                      {e.kind === "inc" ? "+" : "−"}
+                      {fmtMoney(e.amount, debt.currency, lang)}
                     </span>
                   </li>
                 ))}

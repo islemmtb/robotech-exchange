@@ -34,6 +34,16 @@ export type DebtBalanceRow = {
   paid_amount: number;
   remaining_amount: number;
   is_overdue: boolean;
+  increased_amount: number;
+  total_amount: number;
+};
+
+export type DebtIncreaseRow = {
+  id: string;
+  debt_id: string;
+  amount: number;
+  notes: string | null;
+  created_at: string;
 };
 
 export type VerificationStatus =

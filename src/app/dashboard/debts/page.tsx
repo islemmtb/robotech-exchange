@@ -4,6 +4,7 @@ import type {
   DebtBalanceRow,
   CustomerRow,
   DebtPaymentRow,
+  DebtIncreaseRow,
 } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -11,7 +12,7 @@ export const dynamic = "force-dynamic";
 export default async function DebtsPage() {
   const supabase = await createClient();
 
-  const [debtRes, custRes, payRes] = await Promise.all([
+  const [debtRes, custRes, payRes, incRes] = await Promise.all([
     supabase
       .from("debt_balances")
       .select("*")
@@ -23,6 +24,7 @@ export default async function DebtsPage() {
       .eq("archived", false)
       .order("full_name"),
     supabase.from("debt_payments").select("*").order("paid_at", { ascending: false }),
+    supabase.from("debt_increases").select("*").order("created_at", { ascending: false }),
   ]);
 
   return (
@@ -30,6 +32,7 @@ export default async function DebtsPage() {
       debts={(debtRes.data as DebtBalanceRow[]) ?? []}
       customers={(custRes.data as CustomerRow[]) ?? []}
       payments={(payRes.data as DebtPaymentRow[]) ?? []}
+      increases={(incRes.data as DebtIncreaseRow[]) ?? []}
     />
   );
 }

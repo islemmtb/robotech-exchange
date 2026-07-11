@@ -61,6 +61,7 @@ export type Dict = {
     noHistory: string;
     opened: string;
     note: string;
+    added: string;
     close: string;
     tabPay: string;
     tabAdd: string;
@@ -154,6 +155,7 @@ export type Dict = {
     opened: string;
     payment: string;
     note: string;
+    added: string;
     remaining: string;
     paid: string;
     of: string;
@@ -238,6 +240,7 @@ export const dict: Record<Lang, Dict> = {
       noHistory: "No payments recorded yet.",
       opened: "Opened",
       note: "Note",
+      added: "Added",
       close: "Close",
       tabPay: "Payment",
       tabAdd: "Add to debt",
@@ -340,6 +343,7 @@ export const dict: Record<Lang, Dict> = {
       opened: "Opened",
       payment: "Payment",
       note: "Note",
+      added: "Added",
       remaining: "remaining",
       paid: "paid",
       of: "of",
@@ -422,6 +426,7 @@ export const dict: Record<Lang, Dict> = {
       noHistory: "Aucun paiement enregistré.",
       opened: "Créée",
       note: "Note",
+      added: "Ajouté",
       close: "Fermer",
       tabPay: "Paiement",
       tabAdd: "Ajouter au dû",
@@ -525,6 +530,7 @@ export const dict: Record<Lang, Dict> = {
       opened: "Ouverte",
       payment: "Paiement",
       note: "Note",
+      added: "Ajouté",
       remaining: "restant",
       paid: "payé",
       of: "sur",

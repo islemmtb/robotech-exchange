@@ -7,6 +7,7 @@ import type {
   CustomerRow,
   DebtBalanceRow,
   DebtPaymentRow,
+  DebtIncreaseRow,
   DebtStatus,
 } from "@/lib/types";
 
@@ -25,10 +26,12 @@ export function HistoryClient({
   customers,
   debts,
   payments,
+  increases,
 }: {
   customers: CustomerRow[];
   debts: DebtBalanceRow[];
   payments: DebtPaymentRow[];
+  increases: DebtIncreaseRow[];
 }) {
   const { t, lang } = useI18n();
   const [query, setQuery] = useState("");
@@ -48,8 +51,25 @@ export function HistoryClient({
     [debts, selectedId],
   );
 
-  const paymentsFor = (debtId: string) =>
-    payments.filter((p) => p.debt_id === debtId);
+  const eventsFor = (debtId: string) =>
+    [
+      ...increases
+        .filter((i) => i.debt_id === debtId)
+        .map((i) => ({
+          id: i.id,
+          kind: "inc" as const,
+          amount: Number(i.amount),
+          at: i.created_at,
+        })),
+      ...payments
+        .filter((p) => p.debt_id === debtId)
+        .map((p) => ({
+          id: p.id,
+          kind: "pay" as const,
+          amount: Number(p.amount),
+          at: p.paid_at,
+        })),
+    ].sort((a, b) => (a.at < b.at ? -1 : 1));
 
   return (
     <div className="space-y-6">
@@ -116,7 +136,7 @@ export function HistoryClient({
             <div className="space-y-4">
               <h2 className="text-lg font-semibold">{selected.full_name}</h2>
               {customerDebts.map((d) => {
-                const pays = paymentsFor(d.id);
+                const evs = eventsFor(d.id);
                 const kindLabel =
                   d.kind === "payable" ? t.history.youOwe : t.history.owesYou;
                 const kindDot = d.kind === "payable" ? "bg-warn" : "bg-pos";
@@ -181,18 +201,27 @@ export function HistoryClient({
                       </div>
                     )}
 
-                    {pays.length > 0 && (
+                    {evs.length > 0 && (
                       <ul className="mt-3 space-y-1 border-t border-[var(--border)] pt-3">
-                        {pays.map((p) => (
+                        {evs.map((e) => (
                           <li
-                            key={p.id}
+                            key={e.kind + e.id}
                             className="flex items-center justify-between text-xs"
                           >
                             <span className="text-muted">
-                              {t.history.payment} · {fmtDay(p.paid_at, lang)}
+                              {e.kind === "inc"
+                                ? t.history.added
+                                : t.history.payment}{" "}
+                              · {fmtDay(e.at, lang)}
                             </span>
-                            <span className="tabnum font-mono font-medium text-pos">
-                              +{fmtMoney(Number(p.amount), d.currency, lang)}
+                            <span
+                              className={
+                                "tabnum font-mono font-medium " +
+                                (e.kind === "inc" ? "text-warn" : "text-pos")
+                              }
+                            >
+                              {e.kind === "inc" ? "+" : "−"}
+                              {fmtMoney(e.amount, d.currency, lang)}
                             </span>
                           </li>
                         ))}

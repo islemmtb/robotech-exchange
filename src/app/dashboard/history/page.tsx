@@ -4,6 +4,7 @@ import type {
   CustomerRow,
   DebtBalanceRow,
   DebtPaymentRow,
+  DebtIncreaseRow,
 } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -11,7 +12,7 @@ export const dynamic = "force-dynamic";
 export default async function HistoryPage() {
   const supabase = await createClient();
 
-  const [custRes, debtRes, payRes] = await Promise.all([
+  const [custRes, debtRes, payRes, incRes] = await Promise.all([
     supabase.from("customers").select("*").order("full_name"),
     supabase
       .from("debt_balances")
@@ -21,6 +22,10 @@ export default async function HistoryPage() {
       .from("debt_payments")
       .select("*")
       .order("paid_at", { ascending: true }),
+    supabase
+      .from("debt_increases")
+      .select("*")
+      .order("created_at", { ascending: true }),
   ]);
 
   return (
@@ -28,6 +33,7 @@ export default async function HistoryPage() {
       customers={(custRes.data as CustomerRow[]) ?? []}
       debts={(debtRes.data as DebtBalanceRow[]) ?? []}
       payments={(payRes.data as DebtPaymentRow[]) ?? []}
+      increases={(incRes.data as DebtIncreaseRow[]) ?? []}
     />
   );
 }
