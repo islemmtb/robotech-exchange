@@ -200,8 +200,11 @@ function DebtCard({
 }) {
   const { t, lang } = useI18n();
   const [expanded, setExpanded] = useState(false);
-  const [payAmount, setPayAmount] = useState("");
+  const [mode, setMode] = useState<"pay" | "add">("pay");
+  const [amountInput, setAmountInput] = useState("");
   const [busy, setBusy] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deleteText, setDeleteText] = useState("");
 
   const remaining = Number(debt.remaining_amount);
   const original = Number(debt.original_amount);
@@ -222,11 +225,50 @@ function DebtCard({
       .insert({ debt_id: debt.id, amount });
     setBusy(false);
     if (!error) {
-      setPayAmount("");
+      setAmountInput("");
       onChange();
     } else {
       alert(error.message);
     }
+  };
+
+  const increaseDebt = async (amount: number) => {
+    if (!amount || amount <= 0) return;
+    setBusy(true);
+    const newOriginal = original + amount;
+    const status =
+      paid <= 0 ? "open" : paid < newOriginal ? "partially_paid" : "settled";
+    const { error } = await createClient()
+      .from("debts")
+      .update({ original_amount: newOriginal, status })
+      .eq("id", debt.id);
+    setBusy(false);
+    if (!error) {
+      setAmountInput("");
+      onChange();
+    } else {
+      alert(error.message);
+    }
+  };
+
+  const deleteDebt = async () => {
+    setBusy(true);
+    const { error } = await createClient()
+      .from("debts")
+      .delete()
+      .eq("id", debt.id);
+    setBusy(false);
+    if (!error) {
+      onChange();
+    } else {
+      alert(error.message);
+    }
+  };
+
+  const submitAction = () => {
+    const amt = Number(amountInput);
+    if (mode === "pay") recordPayment(amt);
+    else increaseDebt(amt);
   };
 
   const dueLabel = debt.due_date
@@ -301,43 +343,71 @@ function DebtCard({
             </div>
           )}
 
-          {/* Record payment */}
+          {/* Action: payment or add to debt */}
           <div className="mb-4">
-            <label className="mb-1.5 block text-xs font-medium text-muted">
-              {t.debts.recordPayment}
-            </label>
+            <div className="mb-2 grid grid-cols-2 gap-1 rounded-lg bg-surface-2/60 p-1">
+              <button
+                onClick={() => setMode("pay")}
+                className={
+                  "rounded-md px-3 py-1.5 text-xs font-medium transition " +
+                  (mode === "pay"
+                    ? "bg-surface text-fg ring-1 ring-[var(--border)]"
+                    : "text-muted hover:text-fg")
+                }
+              >
+                {t.debts.tabPay}
+              </button>
+              <button
+                onClick={() => setMode("add")}
+                className={
+                  "rounded-md px-3 py-1.5 text-xs font-medium transition " +
+                  (mode === "add"
+                    ? "bg-surface text-fg ring-1 ring-[var(--border)]"
+                    : "text-muted hover:text-fg")
+                }
+              >
+                {t.debts.tabAdd}
+              </button>
+            </div>
             <div className="flex gap-2">
               <input
                 type="number"
                 inputMode="decimal"
                 min="0"
-                max={remaining}
+                max={mode === "pay" ? remaining : undefined}
                 step="any"
-                value={payAmount}
-                onChange={(e) => setPayAmount(e.target.value)}
+                value={amountInput}
+                onChange={(e) => setAmountInput(e.target.value)}
                 placeholder={"0.00 " + debt.currency}
                 className="w-full rounded-lg bg-surface-2 px-3 py-2 text-sm tabnum font-mono outline-none ring-1 ring-[var(--border)] transition focus:ring-2 focus:ring-accent"
               />
               <button
-                disabled={busy || !payAmount}
-                onClick={() => recordPayment(Number(payAmount))}
-                className="shrink-0 rounded-lg bg-fg px-4 py-2 text-sm font-medium text-bg transition hover:opacity-90 disabled:opacity-40"
+                disabled={busy || !amountInput}
+                onClick={submitAction}
+                className={
+                  "shrink-0 rounded-lg px-4 py-2 text-sm font-medium transition disabled:opacity-40 " +
+                  (mode === "add"
+                    ? "bg-warn text-white hover:opacity-90"
+                    : "bg-fg text-bg hover:opacity-90")
+                }
               >
-                {t.debts.record}
+                {mode === "pay" ? t.debts.record : t.debts.addBtn}
               </button>
             </div>
-            <button
-              disabled={busy}
-              onClick={() => {
-                const msg = t.debts.settleConfirm
-                  .replace("{amount}", fmtMoney(remaining, debt.currency, lang))
-                  .replace("{name}", customerName);
-                if (confirm(msg)) recordPayment(remaining);
-              }}
-              className="mt-2 text-xs font-medium text-accent transition hover:underline disabled:opacity-40"
-            >
-              {t.debts.settle} ({fmtMoney(remaining, debt.currency, lang)})
-            </button>
+            {mode === "pay" && remaining > 0 && (
+              <button
+                disabled={busy}
+                onClick={() => {
+                  const msg = t.debts.settleConfirm
+                    .replace("{amount}", fmtMoney(remaining, debt.currency, lang))
+                    .replace("{name}", customerName);
+                  if (confirm(msg)) recordPayment(remaining);
+                }}
+                className="mt-2 text-xs font-medium text-accent transition hover:underline disabled:opacity-40"
+              >
+                {t.debts.settle} ({fmtMoney(remaining, debt.currency, lang)})
+              </button>
+            )}
           </div>
 
           {/* History */}
@@ -363,6 +433,52 @@ function DebtCard({
                   </li>
                 ))}
               </ul>
+            )}
+          </div>
+
+          {/* Danger zone: delete debt (requires typing the word) */}
+          <div className="mt-4 border-t border-[var(--border)] pt-3">
+            {!confirmingDelete ? (
+              <button
+                onClick={() => setConfirmingDelete(true)}
+                className="text-xs font-medium text-danger/80 transition hover:text-danger"
+              >
+                {t.debts.deleteBtn}
+              </button>
+            ) : (
+              <div className="rounded-lg bg-danger/5 p-3 ring-1 ring-danger/20">
+                <p className="text-xs text-danger">{t.debts.deleteWarn}</p>
+                <p className="mt-2 text-[11px] text-muted">
+                  {t.debts.deletePrompt.replace("{word}", t.debts.deleteWord)}
+                </p>
+                <input
+                  value={deleteText}
+                  onChange={(e) => setDeleteText(e.target.value)}
+                  placeholder={t.debts.deleteWord}
+                  className="mt-1.5 w-full rounded-lg bg-surface-2 px-3 py-2 text-sm outline-none ring-1 ring-danger/20 transition focus:ring-2 focus:ring-danger"
+                />
+                <div className="mt-2 flex gap-2">
+                  <button
+                    onClick={() => {
+                      setConfirmingDelete(false);
+                      setDeleteText("");
+                    }}
+                    className="flex-1 rounded-lg px-3 py-2 text-xs font-medium text-muted ring-1 ring-[var(--border)] transition hover:bg-surface-2 hover:text-fg"
+                  >
+                    {t.debts.form.cancel}
+                  </button>
+                  <button
+                    disabled={
+                      busy ||
+                      deleteText.trim().toUpperCase() !== t.debts.deleteWord
+                    }
+                    onClick={deleteDebt}
+                    className="flex-1 rounded-lg bg-danger px-3 py-2 text-xs font-semibold text-white transition hover:opacity-90 disabled:opacity-40"
+                  >
+                    {t.debts.deleteConfirm}
+                  </button>
+                </div>
+              </div>
             )}
           </div>
         </div>

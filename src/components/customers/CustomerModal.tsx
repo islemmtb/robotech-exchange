@@ -16,11 +16,13 @@ const VERIFS: VerificationStatus[] = [
 export function CustomerModal({
   customer,
   customers,
+  hasLiveDebt,
   onClose,
   onSaved,
 }: {
   customer: CustomerRow | null;
   customers: CustomerRow[];
+  hasLiveDebt: boolean;
   onClose: () => void;
   onSaved: () => void;
 }) {
@@ -88,20 +90,21 @@ export function CustomerModal({
     setVerification(c.verification);
   };
 
-  const remove = async () => {
+  const archive = async () => {
     if (!customer) return;
-    if (!confirm(t.customers.form.deleteConfirm)) return;
+    if (hasLiveDebt) {
+      setError(t.customers.form.liveDebtBlock);
+      return;
+    }
+    if (!confirm(t.customers.form.removeConfirm)) return;
     setBusy(true);
     const { error: err } = await createClient()
       .from("customers")
-      .delete()
+      .update({ archived: true })
       .eq("id", customer.id);
     setBusy(false);
     if (err) {
-      // FK restrict -> customer still has debts
-      setError(
-        err.code === "23503" ? t.customers.form.errHasDebts : err.message,
-      );
+      setError(err.message);
       return;
     }
     onSaved();
@@ -218,14 +221,24 @@ export function CustomerModal({
             </p>
           )}
 
+          {customer && (
+            <div className="mb-1">
+              {hasLiveDebt && (
+                <p className="mb-2 rounded-lg bg-surface-2 px-3 py-2 text-[11px] text-muted ring-1 ring-[var(--border)]">
+                  {t.customers.form.liveDebtBlock}
+                </p>
+              )}
+            </div>
+          )}
+
           <div className="flex gap-2 pt-1">
             {customer && (
               <button
-                onClick={remove}
-                disabled={busy}
-                className="rounded-lg px-3 py-2.5 text-sm font-medium text-danger ring-1 ring-danger/20 transition hover:bg-danger/10 disabled:opacity-50"
+                onClick={archive}
+                disabled={busy || hasLiveDebt}
+                className="rounded-lg px-3 py-2.5 text-sm font-medium text-danger ring-1 ring-danger/20 transition hover:bg-danger/10 disabled:opacity-40"
               >
-                {t.customers.form.delete}
+                {t.customers.form.remove}
               </button>
             )}
             <button

@@ -17,7 +17,11 @@ export default async function DebtsPage() {
       .select("*")
       .neq("status", "cancelled")
       .order("due_date", { ascending: true, nullsFirst: false }),
-    supabase.from("customers").select("id, full_name, phone, whatsapp, email").order("full_name"),
+    supabase
+      .from("customers")
+      .select("id, full_name, phone, whatsapp, email, notes, verification, archived")
+      .eq("archived", false)
+      .order("full_name"),
     supabase.from("debt_payments").select("*").order("paid_at", { ascending: false }),
   ]);
 

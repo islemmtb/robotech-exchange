@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import { useI18n } from "@/lib/i18n/LangProvider";
 import { fmtMoney } from "@/lib/format";
 import type {
@@ -56,16 +57,43 @@ export function CustomersClient({
 
   const exposure = useMemo(() => buildExposure(debts), [debts]);
 
+  const liveDebtIds = useMemo(
+    () =>
+      new Set(
+        debts
+          .map((d) => d.customer_id)
+          .filter((id): id is string => Boolean(id)),
+      ),
+    [debts],
+  );
+
+  const active = useMemo(
+    () => customers.filter((c) => !c.archived),
+    [customers],
+  );
+  const archived = useMemo(
+    () => customers.filter((c) => c.archived),
+    [customers],
+  );
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return customers;
-    return customers.filter(
+    if (!q) return active;
+    return active.filter(
       (c) =>
         c.full_name.toLowerCase().includes(q) ||
         (c.phone ?? "").toLowerCase().includes(q) ||
         (c.whatsapp ?? "").toLowerCase().includes(q),
     );
-  }, [customers, query]);
+  }, [active, query]);
+
+  const restore = async (id: string) => {
+    await createClient()
+      .from("customers")
+      .update({ archived: false })
+      .eq("id", id);
+    router.refresh();
+  };
 
   const openAdd = () => {
     setEditing(null);
@@ -199,10 +227,38 @@ export function CustomersClient({
         </div>
       )}
 
+      {/* Removed (archived) clients */}
+      {archived.length > 0 && (
+        <section className="pt-2">
+          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted">
+            {t.customers.removedTitle}
+          </h2>
+          <div className="glass divide-y divide-[var(--border)] rounded-2xl ring-1 ring-[var(--border)]">
+            {archived.map((c) => (
+              <div
+                key={c.id}
+                className="flex items-center justify-between gap-3 px-4 py-3"
+              >
+                <span className="truncate text-sm text-muted">
+                  {c.full_name}
+                </span>
+                <button
+                  onClick={() => restore(c.id)}
+                  className="shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium text-accent ring-1 ring-[var(--border)] transition hover:bg-surface-2"
+                >
+                  {t.customers.restore}
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {modalOpen && (
         <CustomerModal
           customer={editing}
           customers={customers}
+          hasLiveDebt={editing ? liveDebtIds.has(editing.id) : false}
           onClose={() => {
             setModalOpen(false);
             setEditing(null);

@@ -82,13 +82,18 @@ export function HistoryClient({
                     <button
                       onClick={() => setSelectedId(c.id)}
                       className={
-                        "w-full truncate rounded-lg px-3 py-2 text-left text-sm transition " +
+                        "flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-left text-sm transition " +
                         (active
                           ? "bg-surface-2 font-medium text-fg ring-1 ring-[var(--border)]"
                           : "text-muted hover:bg-surface-2 hover:text-fg")
                       }
                     >
-                      {c.full_name}
+                      <span className="truncate">{c.full_name}</span>
+                      {c.archived && (
+                        <span className="shrink-0 rounded bg-surface-2 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-muted ring-1 ring-[var(--border)]">
+                          {t.customers.removedTag}
+                        </span>
+                      )}
                     </button>
                   </li>
                 );

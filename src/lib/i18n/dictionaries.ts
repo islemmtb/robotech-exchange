@@ -62,6 +62,14 @@ export type Dict = {
     opened: string;
     note: string;
     close: string;
+    tabPay: string;
+    tabAdd: string;
+    addBtn: string;
+    deleteBtn: string;
+    deleteWarn: string;
+    deletePrompt: string;
+    deleteWord: string;
+    deleteConfirm: string;
     priorities: { low: string; normal: string; high: string; urgent: string };
     form: {
       newTitle: string;
@@ -107,6 +115,9 @@ export type Dict = {
     };
     youOwe: string;
     owesYou: string;
+    removedTitle: string;
+    restore: string;
+    removedTag: string;
     contact: { call: string; whatsapp: string; email: string };
     form: {
       addTitle: string;
@@ -125,6 +136,9 @@ export type Dict = {
       errName: string;
       errGeneric: string;
       errHasDebts: string;
+      remove: string;
+      removeConfirm: string;
+      liveDebtBlock: string;
     };
     duplicates: { hint: string; usingExisting: string; unlink: string };
   };
@@ -225,6 +239,15 @@ export const dict: Record<Lang, Dict> = {
       opened: "Opened",
       note: "Note",
       close: "Close",
+      tabPay: "Payment",
+      tabAdd: "Add to debt",
+      addBtn: "Add",
+      deleteBtn: "Delete debt",
+      deleteWarn:
+        "This permanently deletes this debt and all its payment history. It can't be undone.",
+      deletePrompt: "Type {word} to confirm.",
+      deleteWord: "DELETE",
+      deleteConfirm: "Delete permanently",
       priorities: { low: "Low", normal: "Normal", high: "High", urgent: "Urgent" },
       form: {
         newTitle: "New debt",
@@ -271,6 +294,9 @@ export const dict: Record<Lang, Dict> = {
       },
       youOwe: "You owe",
       owesYou: "Owes you",
+      removedTitle: "Removed clients",
+      restore: "Restore",
+      removedTag: "Removed",
       contact: { call: "Call", whatsapp: "WhatsApp", email: "Email" },
       form: {
         addTitle: "Add customer",
@@ -289,6 +315,11 @@ export const dict: Record<Lang, Dict> = {
         errName: "Enter a name.",
         errGeneric: "Something went wrong. Try again.",
         errHasDebts: "Can't delete — this customer still has debts on record.",
+        remove: "Remove client",
+        removeConfirm:
+          "Remove this client? Their history stays visible under History.",
+        liveDebtBlock:
+          "Can't remove — this client still has live debts. Settle them first.",
       },
       duplicates: {
         hint: "Might already be saved:",
@@ -392,6 +423,15 @@ export const dict: Record<Lang, Dict> = {
       opened: "Créée",
       note: "Note",
       close: "Fermer",
+      tabPay: "Paiement",
+      tabAdd: "Ajouter au dû",
+      addBtn: "Ajouter",
+      deleteBtn: "Supprimer la dette",
+      deleteWarn:
+        "Cela supprime définitivement cette dette et tout son historique de paiements. Action irréversible.",
+      deletePrompt: "Tape {word} pour confirmer.",
+      deleteWord: "SUPPRIMER",
+      deleteConfirm: "Supprimer définitivement",
       priorities: { low: "Basse", normal: "Normale", high: "Haute", urgent: "Urgente" },
       form: {
         newTitle: "Nouvelle dette",
@@ -438,6 +478,9 @@ export const dict: Record<Lang, Dict> = {
       },
       youOwe: "Tu dois",
       owesYou: "Te doit",
+      removedTitle: "Clients supprimés",
+      restore: "Restaurer",
+      removedTag: "Supprimé",
       contact: { call: "Appeler", whatsapp: "WhatsApp", email: "Email" },
       form: {
         addTitle: "Ajouter un client",
@@ -457,6 +500,11 @@ export const dict: Record<Lang, Dict> = {
         errGeneric: "Une erreur est survenue. Réessaie.",
         errHasDebts:
           "Suppression impossible — ce client a encore des dettes enregistrées.",
+        remove: "Supprimer le client",
+        removeConfirm:
+          "Supprimer ce client ? Son historique reste visible dans Historique.",
+        liveDebtBlock:
+          "Impossible — ce client a encore des dettes en cours. Solde-les d'abord.",
       },
       duplicates: {
         hint: "Peut-être déjà enregistré :",

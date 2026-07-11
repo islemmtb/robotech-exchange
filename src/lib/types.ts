@@ -50,6 +50,7 @@ export type CustomerRow = {
   email: string | null;
   notes: string | null;
   verification: VerificationStatus;
+  archived: boolean;
 };
 
 export type DebtPaymentRow = {
