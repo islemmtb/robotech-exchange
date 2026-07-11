@@ -5,17 +5,25 @@ import { createClient } from "@/lib/supabase/client";
 import { useI18n } from "@/lib/i18n/LangProvider";
 import { fmtMoney } from "@/lib/format";
 import { findSimilarCustomers } from "@/lib/similar";
-import type { CustomerRow, DebtKind, DebtPriority, Currency } from "@/lib/types";
+import type {
+  CustomerRow,
+  DebtBalanceRow,
+  DebtKind,
+  DebtPriority,
+  Currency,
+} from "@/lib/types";
 
 const CURRENCIES: Currency[] = ["USDT", "EUR", "USD", "DZD"];
 const PRIORITIES: DebtPriority[] = ["low", "normal", "high", "urgent"];
 
 export function NewDebtModal({
   customers,
+  debts,
   onClose,
   onCreated,
 }: {
   customers: CustomerRow[];
+  debts: DebtBalanceRow[];
   onClose: () => void;
   onCreated: () => void;
 }) {
@@ -45,6 +53,18 @@ export function NewDebtModal({
     ? newName.trim()
     : (customers.find((c) => c.id === customerId)?.full_name ?? "");
 
+  // If the chosen customer already has a live debt of the same kind + currency,
+  // we add to it instead of creating a second one.
+  const existingDebt =
+    !isNewCustomer && customerId
+      ? debts.find(
+          (d) =>
+            d.customer_id === customerId &&
+            d.kind === kind &&
+            d.currency === currency,
+        )
+      : undefined;
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
@@ -73,6 +93,20 @@ export function NewDebtModal({
     setBusy(true);
     const supabase = createClient();
     const amt = Number(amount);
+
+    // Add to an existing debt instead of creating a new one
+    if (existingDebt) {
+      const { error: iErr } = await supabase
+        .from("debt_increases")
+        .insert({ debt_id: existingDebt.id, amount: amt });
+      setBusy(false);
+      if (iErr) {
+        setError(iErr.message);
+        return;
+      }
+      onCreated();
+      return;
+    }
 
     let finalCustomerId = customerId;
     if (isNewCustomer) {
@@ -239,51 +273,71 @@ export function NewDebtModal({
               </div>
             </div>
 
-            {/* Reason */}
-            <Field
-              label={t.debts.form.reason}
-              value={reason}
-              onChange={setReason}
-              placeholder={t.debts.form.reasonPlaceholder}
-            />
-
-            {/* Priority + due date */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label>{t.debts.form.priority}</Label>
-                <select
-                  value={priority}
-                  onChange={(e) => setPriority(e.target.value as DebtPriority)}
-                  className="w-full rounded-lg bg-surface-2 px-3 py-2.5 text-sm outline-none ring-1 ring-[var(--border)] transition focus:ring-2 focus:ring-accent"
-                >
-                  {PRIORITIES.map((p) => (
-                    <option key={p} value={p}>
-                      {t.debts.priorities[p]}
-                    </option>
-                  ))}
-                </select>
+            {existingDebt ? (
+              <div className="rounded-lg bg-accent/10 p-3 text-xs text-accent ring-1 ring-accent/20">
+                {t.debts.form.existingNote}
+                <div className="mt-2 flex items-center justify-between text-fg">
+                  <span className="text-muted">{t.debts.form.currentLabel}</span>
+                  <span className="tabnum font-mono font-medium">
+                    {fmtMoney(
+                      Number(existingDebt.remaining_amount),
+                      existingDebt.currency,
+                      lang,
+                    )}
+                  </span>
+                </div>
               </div>
-              <div>
-                <Label>{t.debts.form.dueDate}</Label>
-                <input
-                  type="date"
-                  value={dueDate}
-                  onChange={(e) => setDueDate(e.target.value)}
-                  className="w-full rounded-lg bg-surface-2 px-3 py-2.5 text-sm outline-none ring-1 ring-[var(--border)] transition focus:ring-2 focus:ring-accent"
+            ) : (
+              <>
+                {/* Reason */}
+                <Field
+                  label={t.debts.form.reason}
+                  value={reason}
+                  onChange={setReason}
+                  placeholder={t.debts.form.reasonPlaceholder}
                 />
-              </div>
-            </div>
 
-            {/* Notes */}
-            <div>
-              <Label>{t.debts.form.notes}</Label>
-              <textarea
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                rows={2}
-                className="w-full resize-none rounded-lg bg-surface-2 px-3 py-2.5 text-sm outline-none ring-1 ring-[var(--border)] transition focus:ring-2 focus:ring-accent"
-              />
-            </div>
+                {/* Priority + due date */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label>{t.debts.form.priority}</Label>
+                    <select
+                      value={priority}
+                      onChange={(e) =>
+                        setPriority(e.target.value as DebtPriority)
+                      }
+                      className="w-full rounded-lg bg-surface-2 px-3 py-2.5 text-sm outline-none ring-1 ring-[var(--border)] transition focus:ring-2 focus:ring-accent"
+                    >
+                      {PRIORITIES.map((p) => (
+                        <option key={p} value={p}>
+                          {t.debts.priorities[p]}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <Label>{t.debts.form.dueDate}</Label>
+                    <input
+                      type="date"
+                      value={dueDate}
+                      onChange={(e) => setDueDate(e.target.value)}
+                      className="w-full rounded-lg bg-surface-2 px-3 py-2.5 text-sm outline-none ring-1 ring-[var(--border)] transition focus:ring-2 focus:ring-accent"
+                    />
+                  </div>
+                </div>
+
+                {/* Notes */}
+                <div>
+                  <Label>{t.debts.form.notes}</Label>
+                  <textarea
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    rows={2}
+                    className="w-full resize-none rounded-lg bg-surface-2 px-3 py-2.5 text-sm outline-none ring-1 ring-[var(--border)] transition focus:ring-2 focus:ring-accent"
+                  />
+                </div>
+              </>
+            )}
 
             {error && <ErrorBox>{error}</ErrorBox>}
 
@@ -298,7 +352,9 @@ export function NewDebtModal({
                 onClick={goConfirm}
                 className="flex-1 rounded-lg bg-gradient-to-r from-accent to-accent-2 px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-95"
               >
-                {t.debts.form.create}
+                {existingDebt
+                  ? t.debts.form.addToExisting
+                  : t.debts.form.create}
               </button>
             </div>
           </div>
@@ -318,25 +374,56 @@ export function NewDebtModal({
                 dot={kind === "payable" ? "bg-warn" : "bg-pos"}
               />
               <Row label={t.debts.form.customer} value={displayCustomer} />
-              <Row
-                label={t.debts.form.amount}
-                value={fmtMoney(Number(amount), currency, lang)}
-                mono
-                strong
-              />
-              {reason.trim() && (
-                <Row label={t.debts.form.reason} value={reason.trim()} />
-              )}
-              <Row
-                label={t.debts.form.priority}
-                value={t.debts.priorities[priority]}
-              />
-              <Row
-                label={t.debts.form.dueDate}
-                value={dueDate || t.debts.noDue}
-              />
-              {notes.trim() && (
-                <Row label={t.debts.form.notes} value={notes.trim()} />
+              {existingDebt ? (
+                <>
+                  <Row
+                    label={t.debts.form.currentLabel}
+                    value={fmtMoney(
+                      Number(existingDebt.remaining_amount),
+                      currency,
+                      lang,
+                    )}
+                    mono
+                  />
+                  <Row
+                    label={t.debts.form.amount}
+                    value={"+ " + fmtMoney(Number(amount), currency, lang)}
+                    mono
+                  />
+                  <Row
+                    label={t.debts.form.newTotalLabel}
+                    value={fmtMoney(
+                      Number(existingDebt.remaining_amount) + Number(amount),
+                      currency,
+                      lang,
+                    )}
+                    mono
+                    strong
+                  />
+                </>
+              ) : (
+                <>
+                  <Row
+                    label={t.debts.form.amount}
+                    value={fmtMoney(Number(amount), currency, lang)}
+                    mono
+                    strong
+                  />
+                  {reason.trim() && (
+                    <Row label={t.debts.form.reason} value={reason.trim()} />
+                  )}
+                  <Row
+                    label={t.debts.form.priority}
+                    value={t.debts.priorities[priority]}
+                  />
+                  <Row
+                    label={t.debts.form.dueDate}
+                    value={dueDate || t.debts.noDue}
+                  />
+                  {notes.trim() && (
+                    <Row label={t.debts.form.notes} value={notes.trim()} />
+                  )}
+                </>
               )}
             </div>
 
@@ -355,7 +442,11 @@ export function NewDebtModal({
                 disabled={busy}
                 className="flex-1 rounded-lg bg-gradient-to-r from-accent to-accent-2 px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-95 disabled:opacity-50"
               >
-                {busy ? t.debts.form.creating : t.debts.form.confirm}
+                {busy
+                  ? t.debts.form.creating
+                  : existingDebt
+                    ? t.debts.form.addToExisting
+                    : t.debts.form.confirm}
               </button>
             </div>
           </div>

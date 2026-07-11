@@ -99,6 +99,10 @@ export type Dict = {
       reviewHint: string;
       back: string;
       confirm: string;
+      existingNote: string;
+      addToExisting: string;
+      currentLabel: string;
+      newTotalLabel: string;
     };
   };
   customers: {
@@ -279,6 +283,11 @@ export const dict: Record<Lang, Dict> = {
         reviewHint: "Check everything is correct before saving.",
         back: "Back",
         confirm: "Confirm & create",
+        existingNote:
+          "This customer already has a live debt of this type — your amount will be added to it instead of creating a new one.",
+        addToExisting: "Add to existing debt",
+        currentLabel: "Current remaining",
+        newTotalLabel: "New total",
       },
     },
     customers: {
@@ -465,6 +474,11 @@ export const dict: Record<Lang, Dict> = {
         reviewHint: "Vérifie que tout est correct avant d'enregistrer.",
         back: "Retour",
         confirm: "Confirmer et créer",
+        existingNote:
+          "Ce client a déjà une dette en cours de ce type — ton montant y sera ajouté au lieu d'en créer une nouvelle.",
+        addToExisting: "Ajouter à la dette existante",
+        currentLabel: "Restant actuel",
+        newTotalLabel: "Nouveau total",
       },
     },
     customers: {

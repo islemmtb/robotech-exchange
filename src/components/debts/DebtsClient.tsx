@@ -138,6 +138,7 @@ export function DebtsClient({
       {modalOpen && (
         <NewDebtModal
           customers={customers}
+          debts={open}
           onClose={() => setModalOpen(false)}
           onCreated={() => {
             setModalOpen(false);
@@ -327,14 +328,17 @@ function DebtCard({
               {debt.reason}
             </p>
           )}
-          <p
-            className={
-              "mt-1 text-xs " + (debt.is_overdue ? "text-danger" : "text-muted")
-            }
-          >
-            {debt.is_overdue ? t.debts.overdue + " · " : t.debts.due + " "}
-            {dueLabel}
-          </p>
+          {debt.due_date && (
+            <p
+              className={
+                "mt-1 text-xs " +
+                (debt.is_overdue ? "text-danger" : "text-muted")
+              }
+            >
+              {debt.is_overdue ? t.debts.overdue + " · " : t.debts.due + " "}
+              {dueLabel}
+            </p>
+          )}
         </div>
         <div className="text-right">
           <div className="tabnum font-mono text-lg font-semibold tracking-tight">
@@ -355,6 +359,17 @@ function DebtCard({
               {t.debts.opened} · {fmtDateTime(debt.created_at, lang)}
             </span>
           </div>
+
+          <p
+            className={
+              "mb-4 text-xs " + (debt.is_overdue ? "text-danger" : "text-muted")
+            }
+          >
+            {debt.due_date
+              ? (debt.is_overdue ? t.debts.overdue + " · " : t.debts.due + " ") +
+                dueLabel
+              : t.debts.noDue}
+          </p>
 
           {debt.notes && (
             <div className="mb-4 rounded-lg bg-warn/5 px-3 py-2 ring-1 ring-warn/15">
