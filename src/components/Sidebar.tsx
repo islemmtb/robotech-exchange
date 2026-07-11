@@ -16,6 +16,8 @@ function useItems(): Item[] {
     { key: "debts", href: "/dashboard/debts", ready: true, icon: <ScaleIcon /> },
     { key: "customers", href: "/dashboard/customers", ready: true, icon: <UsersIcon /> },
     { key: "history", href: "/dashboard/history", ready: true, icon: <ClockIcon /> },
+    { key: "checklist", href: "/dashboard/checklist", ready: true, icon: <ListCheckIcon /> },
+    { key: "reservations", href: "/dashboard/reservations", ready: true, icon: <BoxIcon /> },
     { key: "cash", href: "#", ready: false, icon: <CashIcon /> },
     { key: "wallets", href: "#", ready: false, icon: <WalletIcon /> },
     { key: "notifications", href: "#", ready: false, icon: <BellIcon /> },
@@ -124,6 +126,8 @@ const SwapIcon = () => (<svg {...s}><path d="M7 4 4 7l3 3" /><path d="M4 7h13" /
 const ScaleIcon = () => (<svg {...s}><path d="M12 3v18" /><path d="M6 8h12" /><path d="M6 8l-3 6a3 3 0 0 0 6 0Z" /><path d="M18 8l-3 6a3 3 0 0 0 6 0Z" /></svg>);
 const UsersIcon = () => (<svg {...s}><circle cx="9" cy="8" r="3" /><path d="M4 20a5 5 0 0 1 10 0" /><path d="M17 8a3 3 0 0 1 0 6M20 20a5 5 0 0 0-3-4.6" /></svg>);
 const ClockIcon = () => (<svg {...s}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>);
+const ListCheckIcon = () => (<svg {...s}><path d="m3 6 1.5 1.5L7 5" /><path d="m3 13 1.5 1.5L7 12" /><path d="M11 6h10" /><path d="M11 13h10" /><path d="M11 20h10" /><path d="m3 19 1.5 1.5L7 18" /></svg>);
+const BoxIcon = () => (<svg {...s}><path d="M21 8 12 3 3 8v8l9 5 9-5V8Z" /><path d="m3 8 9 5 9-5" /><path d="M12 13v8" /></svg>);
 const CashIcon = () => (<svg {...s}><rect x="3" y="6" width="18" height="12" rx="2" /><circle cx="12" cy="12" r="2.5" /></svg>);
 const WalletIcon = () => (<svg {...s}><rect x="3" y="6" width="18" height="13" rx="2" /><path d="M3 10h18" /><circle cx="16.5" cy="14" r="1" /></svg>);
 const BellIcon = () => (<svg {...s}><path d="M6 9a6 6 0 1 1 12 0c0 4 1.5 5 2 6H4c.5-1 2-2 2-6Z" /><path d="M10 20a2 2 0 0 0 4 0" /></svg>);

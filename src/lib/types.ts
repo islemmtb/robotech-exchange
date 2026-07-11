@@ -46,6 +46,27 @@ export type DebtIncreaseRow = {
   created_at: string;
 };
 
+export type ChecklistItemRow = {
+  id: string;
+  name: string | null;
+  number: string | null;
+  note: string;
+  done: boolean;
+  done_at: string | null;
+  created_at: string;
+};
+
+export type ReservationRow = {
+  id: string;
+  customer_id: string | null;
+  client_name: string;
+  client_number: string;
+  note: string | null;
+  done: boolean;
+  done_at: string | null;
+  created_at: string;
+};
+
 export type VerificationStatus =
   | "unverified"
   | "pending"

@@ -9,6 +9,8 @@ export type Dict = {
     debts: string;
     customers: string;
     history: string;
+    checklist: string;
+    reservations: string;
     cash: string;
     wallets: string;
     notifications: string;
@@ -170,6 +172,47 @@ export type Dict = {
       cancelled: string;
     };
   };
+  checklist: {
+    title: string;
+    subtitle: string;
+    name: string;
+    number: string;
+    note: string;
+    namePh: string;
+    numberPh: string;
+    notePh: string;
+    add: string;
+    active: string;
+    completed: string;
+    empty: string;
+    noCompleted: string;
+    doneOn: string;
+    restore: string;
+    checkConfirm: string;
+    errNote: string;
+  };
+  reservations: {
+    title: string;
+    subtitle: string;
+    client: string;
+    selectClient: string;
+    addNew: string;
+    clientName: string;
+    number: string;
+    note: string;
+    numberPh: string;
+    notePh: string;
+    similarHint: string;
+    add: string;
+    active: string;
+    completed: string;
+    empty: string;
+    noCompleted: string;
+    doneOn: string;
+    restore: string;
+    checkConfirm: string;
+    errRequired: string;
+  };
   types: {
     cash: string;
     binance: string;
@@ -189,6 +232,8 @@ export const dict: Record<Lang, Dict> = {
       debts: "Debts",
       customers: "Customers",
       history: "History",
+      checklist: "Checklist",
+      reservations: "Reservations",
       cash: "Cash",
       wallets: "Wallets",
       notifications: "Notifications",
@@ -363,6 +408,49 @@ export const dict: Record<Lang, Dict> = {
         cancelled: "Cancelled",
       },
     },
+    checklist: {
+      title: "Checklist",
+      subtitle:
+        "Quick things to remember. Check one off when it's handled — it moves to Completed.",
+      name: "Name",
+      number: "Number",
+      note: "Note",
+      namePh: "Optional",
+      numberPh: "Optional",
+      notePh: "What to remember",
+      add: "Add",
+      active: "To do",
+      completed: "Completed",
+      empty: "Nothing to do.",
+      noCompleted: "Nothing completed yet.",
+      doneOn: "Done",
+      restore: "Restore",
+      checkConfirm: "Mark this as done? It moves to Completed.",
+      errNote: "Add a note first.",
+    },
+    reservations: {
+      title: "Reservations",
+      subtitle:
+        "Items you promised to get for clients. Check one off when it's delivered.",
+      client: "Client",
+      selectClient: "Select a client…",
+      addNew: "+ New client",
+      clientName: "Client name",
+      number: "Client number",
+      note: "Note (which item)",
+      numberPh: "Phone number",
+      notePh: "e.g. PS4, iPhone 15…",
+      similarHint: "Might already be saved:",
+      add: "Add",
+      active: "Pending",
+      completed: "Delivered",
+      empty: "No pending reservations.",
+      noCompleted: "Nothing delivered yet.",
+      doneOn: "Delivered",
+      restore: "Restore",
+      checkConfirm: "Mark this reservation as delivered?",
+      errRequired: "Pick a client and enter a number.",
+    },
     types: {
       cash: "Cash",
       binance: "Binance",
@@ -380,6 +468,8 @@ export const dict: Record<Lang, Dict> = {
       debts: "Dettes",
       customers: "Clients",
       history: "Historique",
+      checklist: "Check-list",
+      reservations: "Réservations",
       cash: "Caisse",
       wallets: "Wallets",
       notifications: "Notifications",
@@ -554,6 +644,48 @@ export const dict: Record<Lang, Dict> = {
         settled: "Soldée",
         cancelled: "Annulée",
       },
+    },
+    checklist: {
+      title: "Check-list",
+      subtitle:
+        "Des choses à ne pas oublier. Coche quand c'est réglé — ça passe dans Terminé.",
+      name: "Nom",
+      number: "Numéro",
+      note: "Note",
+      namePh: "Optionnel",
+      numberPh: "Optionnel",
+      notePh: "À retenir",
+      add: "Ajouter",
+      active: "À faire",
+      completed: "Terminé",
+      empty: "Rien à faire.",
+      noCompleted: "Rien de terminé pour l'instant.",
+      doneOn: "Fait",
+      restore: "Restaurer",
+      checkConfirm: "Marquer comme fait ? Ça passe dans Terminé.",
+      errNote: "Ajoute une note.",
+    },
+    reservations: {
+      title: "Réservations",
+      subtitle: "Articles promis à des clients. Coche quand c'est livré.",
+      client: "Client",
+      selectClient: "Choisir un client…",
+      addNew: "+ Nouveau client",
+      clientName: "Nom du client",
+      number: "Numéro du client",
+      note: "Note (quel article)",
+      numberPh: "Numéro de téléphone",
+      notePh: "ex. PS4, iPhone 15…",
+      similarHint: "Peut-être déjà enregistré :",
+      add: "Ajouter",
+      active: "En attente",
+      completed: "Livré",
+      empty: "Aucune réservation en attente.",
+      noCompleted: "Rien de livré pour l'instant.",
+      doneOn: "Livré",
+      restore: "Restaurer",
+      checkConfirm: "Marquer cette réservation comme livrée ?",
+      errRequired: "Choisis un client et saisis un numéro.",
     },
     types: {
       cash: "Caisse",
